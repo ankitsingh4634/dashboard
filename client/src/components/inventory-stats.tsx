@@ -32,28 +32,55 @@ export function InventoryStats({ vehicles }: StatsProps) {
     };
   }, [vehicles]);
 
+  const total = vehicles.length;
+
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4">Inventory Statistics</h2>
-      
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <h3 className="font-medium mb-2">Inventory Count</h3>
-          <div className="space-y-2">
-            <div>NEW: {stats.counts.new}</div>
-            <div>USED: {stats.counts.used}</div>
-            <div>CPO: {stats.counts.cpo}</div>
-          </div>
+      <h2 className="text-xl font-semibold mb-4">Inventory Count</h2>
+
+      <div className="space-y-6">
+        <div className="grid grid-cols-3 gap-4">
+          <StatsCard
+            label="NEW"
+            count={stats.counts.new}
+            price={stats.avgMSRP.new}
+            percentage={(stats.counts.new / total) * 100}
+          />
+          <StatsCard
+            label="USED"
+            count={stats.counts.used}
+            price={stats.avgMSRP.used}
+            percentage={(stats.counts.used / total) * 100}
+          />
+          <StatsCard
+            label="CPO"
+            count={stats.counts.cpo}
+            price={stats.avgMSRP.cpo}
+            percentage={(stats.counts.cpo / total) * 100}
+          />
         </div>
-        
-        <div>
-          <h3 className="font-medium mb-2">Average MSRP</h3>
-          <div className="space-y-2">
-            <div>NEW: ${stats.avgMSRP.new.toFixed(2)}</div>
-            <div>USED: ${stats.avgMSRP.used.toFixed(2)}</div>
-            <div>CPO: ${stats.avgMSRP.cpo.toFixed(2)}</div>
-          </div>
-        </div>
+      </div>
+    </div>
+  );
+}
+
+interface StatsCardProps {
+  label: string;
+  count: number;
+  price: number;
+  percentage: number;
+}
+
+function StatsCard({ label, count, price, percentage }: StatsCardProps) {
+  return (
+    <div className="p-4 rounded-lg bg-gray-50">
+      <div className="text-sm font-medium text-gray-500">{label}</div>
+      <div className="mt-2 flex justify-between items-baseline">
+        <div className="text-2xl font-semibold">{count}</div>
+        <div className="text-sm text-gray-500">{percentage.toFixed(1)}%</div>
+      </div>
+      <div className="mt-1 text-sm text-gray-600">
+        ${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
       </div>
     </div>
   );

@@ -3,7 +3,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { setCondition, setBrand, setDateFilter, resetFilters } from "@/lib/store";
 import type { RootState } from "@/lib/store";
-import { vehicleConditions, dateFilters } from "@shared/schema";
+import { vehicleConditions, dateFilters, type VehicleCondition, type DateFilter } from "@shared/schema";
 
 export function Filters() {
   const dispatch = useDispatch();
@@ -13,7 +13,7 @@ export function Filters() {
     <div className="flex flex-wrap gap-4 items-center">
       <Select
         value={filters.condition || ""}
-        onValueChange={(value) => dispatch(setCondition(value || null))}
+        onValueChange={(value) => dispatch(setCondition(value as VehicleCondition || null))}
       >
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Select condition" />
@@ -29,7 +29,7 @@ export function Filters() {
 
       <Select
         value={filters.dateFilter || ""}
-        onValueChange={(value) => dispatch(setDateFilter(value || null))}
+        onValueChange={(value) => dispatch(setDateFilter(value as DateFilter || null))}
       >
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Select time period" />

@@ -16,38 +16,58 @@ interface ChartProps {
 
 export function Charts({ vehicles }: ChartProps) {
   const chartData = useMemo(() => {
-    const byMonth: Record<string, { count: number; avgPrice: number }> = {};
-    
+    const byMonth: Record<string, { count: number }> = {};
+
     vehicles.forEach(vehicle => {
-      const month = new Date(vehicle.timestamp).toLocaleString('default', { month: 'short' });
-      
-      if (!byMonth[month]) {
-        byMonth[month] = { count: 0, avgPrice: 0 };
+      const date = new Date(vehicle.timestamp);
+      const month = date.toLocaleString('default', { month: 'short' });
+      const year = date.getFullYear();
+      const key = `${month} ${year}`;
+
+      if (!byMonth[key]) {
+        byMonth[key] = { count: 0 };
       }
-      
-      byMonth[month].count++;
-      byMonth[month].avgPrice = (byMonth[month].avgPrice * (byMonth[month].count - 1) + vehicle.price) / byMonth[month].count;
+
+      byMonth[key].count++;
     });
 
-    return Object.entries(byMonth).map(([month, data]) => ({
-      month,
-      count: data.count,
-      avgPrice: Math.round(data.avgPrice)
-    }));
+    return Object.entries(byMonth)
+      .map(([month, data]) => ({
+        month,
+        count: data.count,
+      }))
+      .sort((a, b) => {
+        const [aMonth, aYear] = a.month.split(' ');
+        const [bMonth, bYear] = b.month.split(' ');
+        return new Date(`${aMonth} 1, ${aYear}`).getTime() - new Date(`${bMonth} 1, ${bYear}`).getTime();
+      });
   }, [vehicles]);
 
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4">Monthly Trends</h2>
-      
-      <div className="h-[300px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
+      <h2 className="text-xl font-semibold mb-4">Monthly Inventory Trends</h2>
+
+      <div className="h-[300px] w-full">
+        <ResponsiveContainer>
+          <BarChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 20 }}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <XAxis
+              dataKey="month"
+              tick={{ fontSize: 12 }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <YAxis
+              axisLine={false}
+              tickLine={false}
+              tick={{ fontSize: 12 }}
+            />
             <Tooltip />
-            <Bar dataKey="count" fill="#8884d8" />
+            <Bar
+              dataKey="count"
+              fill="rgb(99, 102, 241)"
+              radius={[4, 4, 0, 0]}
+            />
           </BarChart>
         </ResponsiveContainer>
       </div>
