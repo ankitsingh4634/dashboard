@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { InventoryStats } from "@/components/inventory-stats";
 import { Filters } from "@/components/filters";
 import { HistoryLog } from "@/components/history-log";
-import { Charts } from "@/components/charts";
+import { InventoryCharts } from "@/components/charts";
 import type { Vehicle } from "@shared/schema";
 
 export default function Dashboard() {
@@ -33,26 +33,11 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto p-6">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold mb-6">Vehicle Inventory Dashboard</h1>
-          <Filters />
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-6 mb-6">
-          <Card className="p-6 bg-white shadow-sm">
-            <InventoryStats vehicles={vehicles || []} />
-          </Card>
-          <Card className="p-6 bg-white shadow-sm">
-            <Charts vehicles={vehicles || []} />
-          </Card>
-        </div>
-
-        <Card className="p-6 bg-white shadow-sm">
-          <HistoryLog vehicles={vehicles || []} />
-        </Card>
-      </div>
+    <div className="container mx-auto py-8 space-y-8">
+      <h1 className="text-3xl font-bold">Inventory Dashboard</h1>
+      <InventoryStats vehicles={vehicles || []} />
+      <InventoryCharts vehicles={vehicles || []} />
+      <HistoryLog vehicles={vehicles || []} />
     </div>
   );
 }
