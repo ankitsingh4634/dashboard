@@ -12,7 +12,20 @@ export function InventoryCharts() {
   })
 
   if (isLoading) {
-    return <div>Loading charts...</div>;
+    return (
+      <div className="grid gap-4">
+        {[1,2].map((i) => (
+          <Card key={i}>
+            <CardHeader>
+              <div className="h-6 w-1/3 bg-gray-200 animate-pulse rounded"></div>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px] bg-gray-100 animate-pulse rounded"></div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
   }
 
   if (isError) {

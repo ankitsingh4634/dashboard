@@ -21,7 +21,20 @@ export function InventoryStats() {
   ]
 
   if (isLoading) {
-    return <div>Loading stats...</div>;
+    return (
+      <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
+        {[1,2,3,4].map((i) => (
+          <Card key={i}>
+            <CardContent className="p-4">
+              <div className="space-y-3">
+                <div className="h-4 w-1/2 bg-gray-200 animate-pulse rounded"></div>
+                <div className="h-6 w-3/4 bg-gray-200 animate-pulse rounded"></div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
   }
 
   if (isError) {

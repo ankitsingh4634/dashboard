@@ -13,7 +13,20 @@ export function HistoryLog() {
   })
 
   if (isLoading) {
-    return <div>Loading history...</div>;
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>History Log</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {[1,2,3].map((i) => (
+              <div key={i} className="h-8 bg-gray-100 animate-pulse rounded"></div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
   if (isError) {
