@@ -1,80 +1,97 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useQuery } from "@tanstack/react-query"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts'
 
-export function InventoryCharts() {
-  const { data: chartData, isError, isLoading } = useQuery({
-    queryKey: ['inventory-charts'],
-    queryFn: async () => {
-      const response = await fetch('/api/inventory/charts')
-      return response.json()
-    }
-  })
+import { useMemo } from "react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer
+} from "recharts";
+import type { Vehicle } from "@shared/schema";
 
-  if (isLoading) {
-    return (
-      <div className="grid gap-4">
-        {[1,2].map((i) => (
-          <Card key={i}>
-            <CardHeader>
-              <div className="h-6 w-1/3 bg-gray-200 animate-pulse rounded"></div>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[300px] bg-gray-100 animate-pulse rounded"></div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    );
-  }
+interface ChartProps {
+  vehicles: Vehicle[];
+}
 
-  if (isError) {
-    return <div>Error loading charts</div>;
-  }
-
-  if (!chartData?.inventoryCount?.length || !chartData?.averageMsrp?.length) {
-    return <div className="text-center py-4">No chart data available</div>;
-  }
+export function Charts({ vehicles }: ChartProps) {
+  const inventoryData = useMemo(() => {
+    const byMonth: Record<string, { count: number; totalMSRP: number; avgMSRP: number }> = {};
+  
+    vehicles.forEach(vehicle => {
+      const date = new Date(vehicle.timestamp);
+      const month = date.toLocaleString('default', { month: 'short' });
+      const year = date.getFullYear();
+      const key = `${month} ${year}`;
+  
+      if (!byMonth[key]) {
+        byMonth[key] = { count: 0, totalMSRP: 0, avgMSRP: 0 };
+      }
+  
+      byMonth[key].count++;
+  
+      // Extract numeric price value
+      const price = parseFloat(vehicle.price.replace(/[^0-9.]/g, '')); // Removes " USD" and converts to number
+      if (!isNaN(price)) {
+        byMonth[key].totalMSRP += price;
+      }
+    });
+  
+    // Calculate averages
+    Object.keys(byMonth).forEach(key => {
+      if (byMonth[key].count > 0) {
+        byMonth[key].avgMSRP = Math.round(byMonth[key].totalMSRP / byMonth[key].count);
+      } else {
+        byMonth[key].avgMSRP = 0;
+      }
+    });
+  
+    return Object.entries(byMonth)
+      .map(([month, data]) => ({
+        month,
+        count: data.count,
+        avgMSRP: data.avgMSRP
+      }))
+      .sort((a, b) => {
+        const [aMonth, aYear] = a.month.split(' ');
+        const [bMonth, bYear] = b.month.split(' ');
+        return new Date(`${aMonth} 1, ${aYear}`).getTime() - new Date(`${bMonth} 1, ${bYear}`).getTime();
+      });
+  }, [vehicles]);
+  
 
   return (
-    <div className="grid gap-4">
-      <Card>
-        <CardHeader>
-          <CardTitle>Inventory Count</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData?.inventoryCount}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="count" fill="#f97316" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
+    <div className="space-y-8">
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Inventory Count</h3>
+        <div className="h-[300px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={inventoryData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="count" fill="#ff9f43" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Average MSRP in USD</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData?.averageMsrp}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis tickFormatter={(value) => `$${value.toLocaleString()}`} />
-                <Tooltip formatter={(value) => [`$${Number(value).toLocaleString()}`, 'MSRP']} />
-                <Line type="monotone" dataKey="msrp" stroke="#f97316" />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Average MSRP in USD</h3>
+        <div className="h-[300px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={inventoryData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="avgMSRP" fill="#ff9f43" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
     </div>
-  )
+  );
 }

@@ -11,6 +11,7 @@ export const vehicles = pgTable("vehicles", {
   price: real("price").notNull(),
   product_type: text("product_type").notNull(),
   custom_label_0: text("custom_label_0"),
+  leadTime: integer("leadTime"), // Add this line
   timestamp: timestamp("timestamp").notNull()
 });
 

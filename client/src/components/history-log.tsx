@@ -1,75 +1,53 @@
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { useQuery } from "@tanstack/react-query"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import type { Vehicle } from "@shared/schema";
+import { format } from "date-fns";
 
-export function HistoryLog() {
-  const { data: history, isError, isLoading } = useQuery({
-    queryKey: ['inventory-history'],
-    queryFn: async () => {
-      const response = await fetch('/api/inventory/history')
-      return response.json()
-    }
-  })
+interface LogProps {
+  vehicles: Vehicle[];
+}
 
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>History Log</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {[1,2,3].map((i) => (
-              <div key={i} className="h-8 bg-gray-100 animate-pulse rounded"></div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (isError) {
-    return <div>Error loading history</div>;
-  }
-
-  if (!history || history.length === 0) {
-    return <div>No history available</div>;
-  }
+export function HistoryLog({ vehicles }: LogProps) {
+  const sortedVehicles = [...vehicles].sort((a, b) => 
+    new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+  );
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>History Log</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <div>
+      <h2 className="text-xl font-semibold mb-4">History Log</h2>
+      <div className="border rounded-lg">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="bg-gray-50">
               <TableHead>Date</TableHead>
-              <TableHead>Total Items</TableHead>
-              <TableHead>New Items</TableHead>
-              <TableHead>Used Items</TableHead>
-              <TableHead>Total Value</TableHead>
-              <TableHead>New Value</TableHead>
-              <TableHead>Used Value</TableHead>
+              <TableHead>Vehicle Info</TableHead>
+              <TableHead>Lead Time</TableHead>
+              <TableHead>Total MSRP</TableHead>
+              <TableHead>Last Status</TableHead>
+              <TableHead>Last Total MSRP</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {history?.map((entry, index) => (
-              <TableRow key={`${entry.date}-${index}`}>
-                <TableCell>{entry.date}</TableCell>
-                <TableCell>{entry.totalItems}</TableCell>
-                <TableCell>{entry.newItems}</TableCell>
-                <TableCell>{entry.usedItems}</TableCell>
-                <TableCell>${entry.totalValue?.toFixed(2) ?? '0.00'}</TableCell>
-                <TableCell>${entry.newValue?.toFixed(2) ?? '0.00'}</TableCell>
-                <TableCell>${entry.usedValue?.toFixed(2) ?? '0.00'}</TableCell>
+            {sortedVehicles.map((vehicle) => (
+              <TableRow key={vehicle.id}>
+                <TableCell>{format(new Date(vehicle.timestamp), "MMM dd, yy")}</TableCell>
+                <TableCell>{vehicle.title}</TableCell>
+                <TableCell>{vehicle.leadTime || '-'}</TableCell>
+                <TableCell>${vehicle.price.toLocaleString()}</TableCell>
+                <TableCell>{vehicle.condition.toUpperCase()}</TableCell>
+                <TableCell>${vehicle.price.toLocaleString()}</TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
-      </CardContent>
-    </Card>
-  )
+      </div>
+    </div>
+  );
 }
