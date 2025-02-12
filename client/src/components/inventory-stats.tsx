@@ -7,58 +7,43 @@ interface StatsProps {
 
 export function InventoryStats({ vehicles }: StatsProps) {
   const stats = useMemo(() => {
-    const byCondition = {
-      new: vehicles.filter(v => v.condition === "new"),
-      used: vehicles.filter(v => v.condition === "used"),
-      cpo: vehicles.filter(v => v.condition === "cpo")
-    };
-
-    const getAvgMSRP = (vehicles: Vehicle[]) => {
-      if (vehicles.length === 0) return 0;
-      return vehicles.reduce((sum, v) => sum + v.price, 0) / vehicles.length;
-    };
+    const totalMSRP = vehicles.reduce((sum, v) => sum + v.price, 0);
+    const avgMSRP = vehicles.length ? totalMSRP / vehicles.length : 0;
+    const totalLeadTime = vehicles.reduce((sum, v) => sum + (v.leadTime || 0), 0);
+    const avgLeadTime = vehicles.length ? totalLeadTime / vehicles.length : 0;
 
     return {
-      counts: {
-        new: byCondition.new.length,
-        used: byCondition.used.length,
-        cpo: byCondition.cpo.length
-      },
-      avgMSRP: {
-        new: getAvgMSRP(byCondition.new),
-        used: getAvgMSRP(byCondition.used),
-        cpo: getAvgMSRP(byCondition.cpo)
-      }
+      totalVehicles: vehicles.length,
+      totalMSRP: totalMSRP,
+      avgMSRP: avgMSRP,
+      totalLeadTime: totalLeadTime,
+      avgLeadTime: avgLeadTime
     };
   }, [vehicles]);
 
-  const total = vehicles.length;
-
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-4">Inventory Count</h2>
-
-      <div className="space-y-6">
-        <div className="grid grid-cols-3 gap-4">
-          <StatsCard
-            label="NEW"
-            count={stats.counts.new}
-            price={stats.avgMSRP.new}
-            percentage={(stats.counts.new / total) * 100}
-          />
-          <StatsCard
-            label="USED"
-            count={stats.counts.used}
-            price={stats.avgMSRP.used}
-            percentage={(stats.counts.used / total) * 100}
-          />
-          <StatsCard
-            label="CPO"
-            count={stats.counts.cpo}
-            price={stats.avgMSRP.cpo}
-            percentage={(stats.counts.cpo / total) * 100}
-          />
-        </div>
+    <div className="space-y-6">
+      <div className="grid grid-cols-4 gap-4">
+        <StatsCard
+          label="Total Vehicles"
+          value={stats.totalVehicles}
+          subValue={null}
+        />
+        <StatsCard
+          label="Total MSRP"
+          value={`$${stats.totalMSRP.toLocaleString()}`}
+          subValue="USD MSRP"
+        />
+        <StatsCard
+          label="Avg MSRP"
+          value={`$${stats.avgMSRP.toLocaleString()}`}
+          subValue="Avg USD MSRP"
+        />
+        <StatsCard
+          label="Avg Lead Time"
+          value={stats.avgLeadTime.toFixed(1)}
+          subValue="Days"
+        />
       </div>
     </div>
   );
@@ -66,22 +51,16 @@ export function InventoryStats({ vehicles }: StatsProps) {
 
 interface StatsCardProps {
   label: string;
-  count: number;
-  price: number;
-  percentage: number;
+  value: string | number;
+  subValue: string | null;
 }
 
-function StatsCard({ label, count, price, percentage }: StatsCardProps) {
+function StatsCard({ label, value, subValue }: StatsCardProps) {
   return (
-    <div className="p-4 rounded-lg bg-gray-50">
+    <div className="p-4 rounded-lg bg-white border">
       <div className="text-sm font-medium text-gray-500">{label}</div>
-      <div className="mt-2 flex justify-between items-baseline">
-        <div className="text-2xl font-semibold">{count}</div>
-        <div className="text-sm text-gray-500">{percentage.toFixed(1)}%</div>
-      </div>
-      <div className="mt-1 text-sm text-gray-600">
-        ${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-      </div>
+      <div className="mt-2 text-2xl font-semibold">{value}</div>
+      {subValue && <div className="mt-1 text-sm text-gray-600">{subValue}</div>}
     </div>
   );
 }

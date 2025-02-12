@@ -1,3 +1,4 @@
+
 import { useMemo } from "react";
 import {
   BarChart,
@@ -15,8 +16,8 @@ interface ChartProps {
 }
 
 export function Charts({ vehicles }: ChartProps) {
-  const chartData = useMemo(() => {
-    const byMonth: Record<string, { count: number }> = {};
+  const inventoryData = useMemo(() => {
+    const byMonth: Record<string, { count: number; avgMSRP: number }> = {};
 
     vehicles.forEach(vehicle => {
       const date = new Date(vehicle.timestamp);
@@ -25,16 +26,23 @@ export function Charts({ vehicles }: ChartProps) {
       const key = `${month} ${year}`;
 
       if (!byMonth[key]) {
-        byMonth[key] = { count: 0 };
+        byMonth[key] = { count: 0, avgMSRP: 0 };
       }
 
       byMonth[key].count++;
+      byMonth[key].avgMSRP += vehicle.price;
+    });
+
+    // Calculate averages
+    Object.keys(byMonth).forEach(key => {
+      byMonth[key].avgMSRP = byMonth[key].avgMSRP / byMonth[key].count;
     });
 
     return Object.entries(byMonth)
       .map(([month, data]) => ({
         month,
         count: data.count,
+        avgMSRP: Math.round(data.avgMSRP)
       }))
       .sort((a, b) => {
         const [aMonth, aYear] = a.month.split(' ');
@@ -44,32 +52,35 @@ export function Charts({ vehicles }: ChartProps) {
   }, [vehicles]);
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-4">Monthly Inventory Trends</h2>
+    <div className="space-y-8">
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Inventory Count</h3>
+        <div className="h-[300px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={inventoryData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="count" fill="#ff9f43" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
 
-      <div className="h-[300px] w-full">
-        <ResponsiveContainer>
-          <BarChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 20 }}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis
-              dataKey="month"
-              tick={{ fontSize: 12 }}
-              axisLine={false}
-              tickLine={false}
-            />
-            <YAxis
-              axisLine={false}
-              tickLine={false}
-              tick={{ fontSize: 12 }}
-            />
-            <Tooltip />
-            <Bar
-              dataKey="count"
-              fill="rgb(99, 102, 241)"
-              radius={[4, 4, 0, 0]}
-            />
-          </BarChart>
-        </ResponsiveContainer>
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Average MSRP in USD</h3>
+        <div className="h-[300px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={inventoryData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="avgMSRP" fill="#54a0ff" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );
