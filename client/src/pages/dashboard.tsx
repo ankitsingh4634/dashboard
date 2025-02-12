@@ -35,9 +35,9 @@ export default function Dashboard() {
   return (
     <div className="container mx-auto py-8 space-y-8">
       <h1 className="text-3xl font-bold">Inventory Dashboard</h1>
-      <InventoryStats vehicles={vehicles || []} />
-      <InventoryCharts vehicles={vehicles || []} />
-      <HistoryLog vehicles={vehicles || []} />
+      <InventoryStats />
+      <InventoryCharts />
+      <HistoryLog />
     </div>
   );
 }
