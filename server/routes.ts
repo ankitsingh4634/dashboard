@@ -77,17 +77,32 @@ export async function getStats() {
 }
 
 export async function getCharts() {
-  const vehicles = await db.all<Vehicle[]>("SELECT * FROM vehicles ORDER BY created_at DESC LIMIT 12");
+  const vehicles = await db.all<Vehicle[]>("SELECT * FROM vehicles ORDER BY created_at DESC");
+  
+  const countMap = new Map();
+  const msrpMap = new Map();
+  
+  vehicles.forEach(v => {
+    const date = new Date(v.created_at).toLocaleDateString();
+    countMap.set(date, (countMap.get(date) || 0) + 1);
+    
+    const current = msrpMap.get(date) || { total: 0, count: 0 };
+    msrpMap.set(date, {
+      total: current.total + v.msrp,
+      count: current.count + 1
+    });
+  });
 
-  const inventoryCount = vehicles.map(v => ({
-    date: new Date(v.created_at).toLocaleDateString(),
-    count: 1
-  }));
+  const inventoryCount = Array.from(countMap.entries())
+    .map(([date, count]) => ({ date, count }))
+    .slice(0, 12);
 
-  const averageMsrp = vehicles.map(v => ({
-    date: new Date(v.created_at).toLocaleDateString(),
-    msrp: v.msrp
-  }));
+  const averageMsrp = Array.from(msrpMap.entries())
+    .map(([date, { total, count }]) => ({
+      date,
+      msrp: total / count
+    }))
+    .slice(0, 12);
 
   return { inventoryCount, averageMsrp };
 }

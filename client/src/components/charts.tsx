@@ -67,8 +67,8 @@ export function InventoryCharts() {
               <LineChart data={chartData?.averageMsrp}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip />
+                <YAxis tickFormatter={(value) => `$${value.toLocaleString()}`} />
+                <Tooltip formatter={(value) => [`$${Number(value).toLocaleString()}`, 'MSRP']} />
                 <Line type="monotone" dataKey="msrp" stroke="#f97316" />
               </LineChart>
             </ResponsiveContainer>
