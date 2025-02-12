@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useQuery } from "@tanstack/react-query"
 
 export function HistoryLog() {
-  const { data: history } = useQuery({
+  const { data: history, isError, isLoading } = useQuery({
     queryKey: ['inventory-history'],
     queryFn: async () => {
       const response = await fetch('/api/inventory/history')

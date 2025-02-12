@@ -2,6 +2,8 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { subMonths, startOfMonth, endOfMonth, startOfYear, endOfYear } from "date-fns";
+import { db } from "./db";
+import type { Vehicle } from "@shared/schema";
 
 export function registerRoutes(app: Express): Server {
   app.get("/api/inventory", async (req, res) => {
@@ -58,4 +60,48 @@ export function registerRoutes(app: Express): Server {
 
   const httpServer = createServer(app);
   return httpServer;
+}
+
+export async function getStats() {
+  const vehicles = await db.all<Vehicle[]>("SELECT * FROM vehicles");
+
+  return {
+    totalItems: vehicles.length,
+    totalValue: vehicles.reduce((sum, v) => sum + v.msrp, 0),
+    newItems: vehicles.filter(v => v.condition === 'new').length,
+    usedItems: vehicles.filter(v => v.condition === 'used').length,
+    newAvgMsrp: vehicles.filter(v => v.condition === 'new').reduce((sum, v) => sum + v.msrp, 0) / vehicles.filter(v => v.condition === 'new').length,
+    usedAvgMsrp: vehicles.filter(v => v.condition === 'used').reduce((sum, v) => sum + v.msrp, 0) / vehicles.filter(v => v.condition === 'used').length,
+    categories: new Set(vehicles.map(v => v.category)).size
+  };
+}
+
+export async function getCharts() {
+  const vehicles = await db.all<Vehicle[]>("SELECT * FROM vehicles ORDER BY created_at DESC LIMIT 12");
+
+  const inventoryCount = vehicles.map(v => ({
+    date: new Date(v.created_at).toLocaleDateString(),
+    count: 1
+  }));
+
+  const averageMsrp = vehicles.map(v => ({
+    date: new Date(v.created_at).toLocaleDateString(),
+    msrp: v.msrp
+  }));
+
+  return { inventoryCount, averageMsrp };
+}
+
+export async function getHistory() {
+  const vehicles = await db.all<Vehicle[]>("SELECT * FROM vehicles ORDER BY created_at DESC LIMIT 7");
+
+  return vehicles.map(v => ({
+    date: new Date(v.created_at).toLocaleDateString(),
+    totalItems: 1,
+    newItems: v.condition === 'new' ? 1 : 0,
+    usedItems: v.condition === 'used' ? 1 : 0,
+    totalValue: v.msrp,
+    newValue: v.condition === 'new' ? v.msrp : 0,
+    usedValue: v.condition === 'used' ? v.msrp : 0
+  }));
 }

@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { useQuery } from "@tanstack/react-query"
 
 export function InventoryStats() {
-  const { data: stats } = useQuery({
+  const { data: stats, isError, isLoading } = useQuery({
     queryKey: ['inventory-stats'],
     queryFn: async () => {
       const response = await fetch('/api/inventory/stats')

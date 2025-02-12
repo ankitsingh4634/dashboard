@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts'
 
 export function InventoryCharts() {
-  const { data: chartData } = useQuery({
+  const { data: chartData, isError, isLoading } = useQuery({
     queryKey: ['inventory-charts'],
     queryFn: async () => {
       const response = await fetch('/api/inventory/charts')
