@@ -93,15 +93,34 @@ export async function getCharts() {
 }
 
 export async function getHistory() {
-  const vehicles = await db.all<Vehicle[]>("SELECT * FROM vehicles ORDER BY created_at DESC LIMIT 7");
+  const vehicles = await db.all<Vehicle[]>("SELECT * FROM vehicles ORDER BY created_at DESC");
+  
+  const historyMap = new Map();
+  
+  vehicles.forEach(v => {
+    const date = new Date(v.created_at).toLocaleDateString();
+    const current = historyMap.get(date) || {
+      date,
+      totalItems: 0,
+      newItems: 0,
+      usedItems: 0,
+      totalValue: 0,
+      newValue: 0,
+      usedValue: 0
+    };
+    
+    current.totalItems += 1;
+    current.totalValue += v.msrp;
+    if (v.condition === 'new') {
+      current.newItems += 1;
+      current.newValue += v.msrp;
+    } else {
+      current.usedItems += 1;
+      current.usedValue += v.msrp;
+    }
+    
+    historyMap.set(date, current);
+  });
 
-  return vehicles.map(v => ({
-    date: new Date(v.created_at).toLocaleDateString(),
-    totalItems: 1,
-    newItems: v.condition === 'new' ? 1 : 0,
-    usedItems: v.condition === 'used' ? 1 : 0,
-    totalValue: v.msrp,
-    newValue: v.condition === 'new' ? v.msrp : 0,
-    usedValue: v.condition === 'used' ? v.msrp : 0
-  }));
+  return Array.from(historyMap.values()).slice(0, 7);
 }

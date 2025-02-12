@@ -56,8 +56,8 @@ export function HistoryLog() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {history?.map((entry) => (
-              <TableRow key={entry.date}>
+            {history?.map((entry, index) => (
+              <TableRow key={`${entry.date}-${index}`}>
                 <TableCell>{entry.date}</TableCell>
                 <TableCell>{entry.totalItems}</TableCell>
                 <TableCell>{entry.newItems}</TableCell>
