@@ -62,9 +62,9 @@ export function HistoryLog() {
                 <TableCell>{entry.totalItems}</TableCell>
                 <TableCell>{entry.newItems}</TableCell>
                 <TableCell>{entry.usedItems}</TableCell>
-                <TableCell>${entry.totalValue.toFixed(2)}</TableCell>
-                <TableCell>${entry.newValue.toFixed(2)}</TableCell>
-                <TableCell>${entry.usedValue.toFixed(2)}</TableCell>
+                <TableCell>${entry.totalValue?.toFixed(2) ?? '0.00'}</TableCell>
+                <TableCell>${entry.newValue?.toFixed(2) ?? '0.00'}</TableCell>
+                <TableCell>${entry.usedValue?.toFixed(2) ?? '0.00'}</TableCell>
               </TableRow>
             ))}
           </TableBody>

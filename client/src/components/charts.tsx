@@ -32,8 +32,8 @@ export function InventoryCharts() {
     return <div>Error loading charts</div>;
   }
 
-  if (!chartData) {
-    return <div>No chart data available</div>;
+  if (!chartData?.inventoryCount?.length || !chartData?.averageMsrp?.length) {
+    return <div className="text-center py-4">No chart data available</div>;
   }
 
   return (

@@ -11,13 +11,13 @@ export function InventoryStats() {
   })
 
   const metrics = [
-    { label: 'Total Items', value: stats?.totalItems || 0 },
-    { label: 'Total Value (USD)', value: stats?.totalValue?.toFixed(2) || '0.00' },
-    { label: 'New Avg. MSRP', value: stats?.newAvgMsrp?.toFixed(2) || '0.00' },
-    { label: 'Used Items', value: stats?.usedItems || 0 },
-    { label: 'Used Value (USD)', value: stats?.usedValue?.toFixed(2) || '0.00' },
-    { label: 'Used Avg. MSRP', value: stats?.usedAvgMsrp?.toFixed(2) || '0.00' },
-    { label: 'Categories', value: stats?.categories || 0 },
+    { label: 'Total Items', value: stats?.totalItems ?? 0 },
+    { label: 'Total Value (USD)', value: stats?.totalValue ? `$${stats.totalValue.toFixed(2)}` : '$0.00' },
+    { label: 'New Avg. MSRP', value: stats?.newAvgMsrp ? `$${stats.newAvgMsrp.toFixed(2)}` : '$0.00' },
+    { label: 'Used Items', value: stats?.usedItems ?? 0 },
+    { label: 'Used Value (USD)', value: stats?.usedValue ? `$${stats.usedValue.toFixed(2)}` : '$0.00' },
+    { label: 'Used Avg. MSRP', value: stats?.usedAvgMsrp ? `$${stats.usedAvgMsrp.toFixed(2)}` : '$0.00' },
+    { label: 'Categories', value: stats?.categories ?? 0 },
   ]
 
   if (isLoading) {
