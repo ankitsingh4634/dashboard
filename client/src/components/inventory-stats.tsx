@@ -20,6 +20,14 @@ export function InventoryStats() {
     { label: 'Categories', value: stats?.categories || 0 },
   ]
 
+  if (isLoading) {
+    return <div>Loading stats...</div>;
+  }
+
+  if (isError) {
+    return <div>Error loading stats</div>;
+  }
+
   return (
     <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
       {metrics.map((metric) => (

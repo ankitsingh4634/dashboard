@@ -11,6 +11,18 @@ export function InventoryCharts() {
     }
   })
 
+  if (isLoading) {
+    return <div>Loading charts...</div>;
+  }
+
+  if (isError) {
+    return <div>Error loading charts</div>;
+  }
+
+  if (!chartData) {
+    return <div>No chart data available</div>;
+  }
+
   return (
     <div className="grid gap-4">
       <Card>

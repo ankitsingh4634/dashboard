@@ -12,6 +12,18 @@ export function HistoryLog() {
     }
   })
 
+  if (isLoading) {
+    return <div>Loading history...</div>;
+  }
+
+  if (isError) {
+    return <div>Error loading history</div>;
+  }
+
+  if (!history || history.length === 0) {
+    return <div>No history available</div>;
+  }
+
   return (
     <Card>
       <CardHeader>
