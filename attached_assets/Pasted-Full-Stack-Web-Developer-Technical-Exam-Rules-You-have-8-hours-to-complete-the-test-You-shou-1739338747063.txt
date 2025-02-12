@@ -1,0 +1,52 @@
+Full-Stack Web Developer - Technical Exam
+
+Rules
+You have 8 hours to complete the test.
+You should use React, Redux Toolkit, Express for this exam
+Your submission to us should include source, documentation, project support files
+(makefiles, test code, etc.) or other associated materials that are required to build your code and understand the approach taken in your solution. Also, please indicate the total amount of time you needed to author your solution.
+On completion of the test, please provide us a public GitHub repository with your
+solutions.
+Work should reflect your own effort as much as possible. Use your own judgment, but understand that evaluators will determine if your submission honors the spirit of the exercise. Failure to adhere to this guideline will result in negative evaluation.
+Do not copy or plagiarize others’ work. If you use open source or third-party code, clearly cite the authors. There should be a clear separation between incorporated third-party code and your own.
+The code must have sufficient documentation to be run and tested.
+
+Instructions:
+Design and Layout:
+Follow the provided mockup design (LINK HERE).
+Transform the provided data to build a dashboard that includes the following components:
+Dashboard Component:
+Recent Data: Display the most recently gathered data.
+Inventory Count: This should be categorized and filtered by:
+NEW vehicles
+USED vehicles
+CPO (Certified Pre-Owned) vehicles
+Average MSRP (in USD): This should also be filtered by:
+NEW vehicles
+USED vehicles
+CPO vehicles
+History Log: Display all inventory data.
+New Inventory - Count, Total MSRP, and Avg MSRP
+Used Inventory - Count, Total MSRP, and Avg MSRP
+CPO - Count, Total MSRP, and Avg MSRP
+Filters:
+Ensure the Inventory Count, Average MSRP, and History Log can be filtered using the "FILTER DATA BY" function located in the top right corner of the dashboard. The filter options should include:
+Vehicle Make (if applicable)
+Duration:
+Last month
+This month
+Last 3 months
+Last 6 months
+This year
+Last year (if applicable)
+Data:
+Use the data provided in sample-data.csv (LINK HERE).
+The API should have an endpoint (e.g., /api/inventory) that serves the data from sample-data.csv.
+Ensure the data can be filtered based on the parameters provided (e.g., vehicle make, duration).
+Document the API endpoint clearly, specifying the request and response formats.
+Libraries:
+You may use any open-source or public domain libraries to assist you.
+Ensure all libraries used are clearly documented.
+Guidelines:
+Do not copy another developer’s work. The goal is to demonstrate your effort and knowledge.
+The application should be reasonably performant
